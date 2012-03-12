@@ -19,10 +19,12 @@ import de.tum.ws2010.propra.raytracer.primitives.Ray;
  */
 public class Scenery {
     public final int maxRecursions;
-    private final int maxAARecursions;
+    public int maxAARecursions;
     public final int aaLevel;
     private double resolutionFact;
     private Camera c;
+    public static final boolean adaptiveAA=false;
+    
     
     public Scenery(int maxRecursions, int maxAARecursions, int aaLevel) {
         this.maxRecursions=maxRecursions;
@@ -68,14 +70,13 @@ public class Scenery {
             return background;
         }
         
-        if(maxRecursions-maxAARecursions<=recursionsLeft) {
+        if(adaptiveAA && maxRecursions-maxAARecursions<recursionsLeft) {
             //do AA
             
             //this is accurate for resolutions of 1000x1000-3000x3000, below it should do just a little overwork
             if(intersect.distanceToEdge==Float.NaN || Math.log(intersect.distanceToEdge) < -0.0009*resolutionFact+3.2) {
-                System.out.println(intersect.distanceToEdge);
-                //TODO perform SSAA
-                return new Color(0, 0, 0, 0);
+                //System.out.println(intersect.distanceToEdge);
+                return null; //tells caller to mark
             }
         }
         

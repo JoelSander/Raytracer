@@ -119,7 +119,8 @@ public class Camera {
 
 	/**
 	 * Creates a single ray for a given pixel.
-	 * 
+	 * this one takes a pixel argument and offsets it by 0.5 pixels
+         * to shoot the ray through the center of the pixel.
 	 * @param pixX
 	 * @param pixY
 	 * @return Ray from the camera's origin through the given pixel.
@@ -140,8 +141,27 @@ public class Camera {
 		return new Ray(pos, dir);
 	}
         
-        public Ray createRay(double pixX, double pixY) {
-            //TODO
+        /**
+         * this one creates a ray which gets no additional offset,
+         * e.g. when (0,0) is supplied, the ray goes through the top left of
+         * pixel (0,0)
+         * @param pixX
+         * @param pixY
+         * @return Ray from the camera's origin through the given screen coords.
+         */
+        public Ray createRay(double pixX, double pixY) {            
+            // compute pixel offset along right and up direction
+		double offsetX = viewPlaneWidth
+				* (pixX / resX -0.5f);//- 0.5f + 0.5f / resX);
+		double offsetY = -viewPlaneHeight
+				* (pixY / resY -0.5f);//- 0.5f + 0.5f / resY);
+
+		Vector3d viewPlaneOffX = rightDir.times(offsetX);
+		Vector3d viewPlaneOffY = upDir.times(offsetY);
+
+		Vector3d dir = viewDir.plus(viewPlaneOffX).plus(viewPlaneOffY);
+
+		return new Ray(pos, dir);
         }
 
 	/**

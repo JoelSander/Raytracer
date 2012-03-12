@@ -48,7 +48,10 @@ public class Intersection {
     public Intersection(Ray r, Vector3d intersPosition, Vector3d intersNormal, Material m,float distanceToEdge) {
         ray = r;
         position = intersPosition;
-        normal = intersNormal.getNormalized();
+        if(intersNormal !=null)
+            normal = intersNormal.getNormalized();
+        else
+            normal=intersNormal;
         material = m;        
         this.distanceToEdge = distanceToEdge;
     }

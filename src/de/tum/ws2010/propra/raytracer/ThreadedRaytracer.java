@@ -14,6 +14,7 @@ import de.tum.ws2010.propra.raytracer.ThreadedCameras.ThreadpoolCamera;
 import de.tum.ws2010.propra.raytracer.render.Camera;
 import de.tum.ws2010.propra.raytracer.render.Scene;
 import de.tum.ws2010.propra.raytracer.render.Scenery;
+import de.tum.ws2010.propra.raytracer.scenes.CheckerboardScene;
 import de.tum.ws2010.propra.raytracer.scenes.ChristmasScene;
 import de.tum.ws2010.propra.raytracer.scenes.CornellBoxScene;
 import de.tum.ws2010.propra.raytracer.scenes.CornellBoxScene2;
@@ -40,14 +41,14 @@ public class ThreadedRaytracer extends JFrame {
         //Camera cam = new Camera(Math.PI / 3.0f);
         //Camera cam = new LinethreadCamera(Math.PI / 3.0f);
         //Camera cam = new MultithreadCamera(Math.PI / 3.0f, 4);
-        Camera cam = new ThreadpoolCamera(Math.PI / 3.0f, 1);
+        Camera cam = new ThreadpoolCamera(Math.PI / 3.0f, 4);
 
         // Get or create a scene.
         // Remove comment of the scene you want to render.
         Scene s = null;
-        s = new TestLightsScene();
-        // s = new CheckerboardScene();
-        //s = new CornellBoxScene2();
+        //s = new TestLightsScene();
+         s = new CheckerboardScene();
+        // s = new CornellBoxScene2();
         // s = new MirrorBoxScene();
         // s = new TetrisScene();
         // s = new StairwayScene();
@@ -104,7 +105,7 @@ public class ThreadedRaytracer extends JFrame {
 
         // create and set up frame
         ThreadedRaytracer raytraceFrame = new ThreadedRaytracer(img);
-        raytraceFrame.setResizable(false);
+        raytraceFrame.setResizable(true);
         raytraceFrame.addWindowListener(new WindowAdapter() {
             @Override public void windowClosing(WindowEvent e) {
                 //TODO ask for saving

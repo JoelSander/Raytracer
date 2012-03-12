@@ -24,7 +24,7 @@ public class StairwayScene extends Scene {
 	private double height;
 	
 	public StairwayScene() {
-		scenery = new Scenery();
+		scenery = new Scenery(5,2,2);
 
 		// create Light sources
 		AmbientLight al = new AmbientLight(0.1);

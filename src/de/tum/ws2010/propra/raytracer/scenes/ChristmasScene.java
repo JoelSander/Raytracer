@@ -32,7 +32,7 @@ public class ChristmasScene extends Scene {
 	 * Constructor generating the scenery and defining a camera position. 
 	 */
 	public ChristmasScene() {
-		scenery = new Scenery();
+		scenery = new Scenery(5,2,2);
 		scenery.setBackgroundColor(new Color(0, 0, 100));
 
 		// create Light sources

@@ -63,13 +63,17 @@ abstract public class ThreadedCamera extends Camera {
      */
     public void renderPixel(int pixX, int pixY) {
         // create ray
-        Ray r = createRay(pixX, pixY);
+        Ray r = createRay(pixX+0.5d, pixY+0.5d);
 
         // determine Color along ray
         Color color = scenery.traceRay(r, scenery.maxRecursions);
-
-        // set pixel
-        sImg.writePixel(pixX, pixY, color);
+        
+        if(color==null){
+            sImg.markPixel(pixX,pixY, true);
+            sImg.writePixel(pixX, pixY, Color.red);
+        } else {
+            sImg.writePixel(pixX, pixY, color);
+        }
     }
 
     /**

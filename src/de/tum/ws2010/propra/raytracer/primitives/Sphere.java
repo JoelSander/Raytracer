@@ -1,6 +1,7 @@
 package de.tum.ws2010.propra.raytracer.primitives;
 
 import de.tum.ws2010.propra.raytracer.material.Material;
+import de.tum.ws2010.propra.raytracer.render.Scenery;
 
 /**
  * Sphere that can be placed in the scene.
@@ -27,6 +28,11 @@ public class Sphere implements Intersectable {
 
     @Override
     public Intersection intersect(Ray ray) {
+        return intersect(ray, center, radius, material);
+    }
+    
+    
+    public static Intersection intersect(Ray ray, Vector3d center, double radius, Material material) {
         double boundingSquare = radius * radius;
         Vector3d center2origin = ray.origin.minus(center);
         double a, b, c;
@@ -55,7 +61,9 @@ public class Sphere implements Intersectable {
             //double d = Math.sqrt( Math.pow(intPos.x-center.x,2)+Math.pow(intPos.y-center.y,2)+Math.pow(intPos.z-center.z,2) );              
             
             Vector3d normal=intPos.minus(center).getNormalized();
-            float dist=(float)( Math.toDegrees(normal.angle(ray.direction))-90);
+            float dist=0;
+            if(Scenery.adaptiveAA)
+                dist=(float)( Math.toDegrees(normal.angle(ray.direction))-90);
             //System.out.println(dist);
             return new Intersection(ray, intPos, normal, material,dist);
         } else {

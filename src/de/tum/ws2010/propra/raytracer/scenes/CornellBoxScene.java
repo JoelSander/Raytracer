@@ -25,7 +25,7 @@ public class CornellBoxScene extends Scene {
 	 */
 	public CornellBoxScene() {
 
-		scenery = new Scenery();
+		scenery = new Scenery(5,3,4);
 
 		// create Light sources
 		AmbientLight al = new AmbientLight(0.1);

@@ -48,6 +48,10 @@ public class Box implements Intersectable {
      */
     @Override
     public Intersection intersect(Ray ray) {
+        return intersect(ray, false);
+    }
+    
+    public Intersection intersect(Ray ray, boolean noIntersection) {
         double tmin = -Double.MAX_VALUE;
         double tmax = Double.MAX_VALUE;
 
@@ -94,6 +98,9 @@ public class Box implements Intersectable {
                 return null;
             }
         }
+        if(noIntersection)
+            return new Intersection(null, null, null, null);
+        
         double t;
         Vector3d normal;
         if (tmin > 0) {
@@ -130,9 +137,10 @@ public class Box implements Intersectable {
             mat = materialFront;
         }
         
+        //check the distance of intPos to my edges
+        //TODO calculate angle distance to edge
         
-        
-        return new Intersection(ray, intPos, normal, mat);
+        return new Intersection(ray, intPos, normal, mat,0);
 
     }
     /**

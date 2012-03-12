@@ -19,7 +19,7 @@ public class CornellBoxScene2 extends Scene {
 	 */
 	public CornellBoxScene2() {
 
-		scenery = new Scenery();
+		scenery = new Scenery(5,3,4);
 
 		// create Light sources
 		AmbientLight al = new AmbientLight(0.1);
@@ -32,6 +32,7 @@ public class CornellBoxScene2 extends Scene {
 		Material red = new Material(new Color(255, 0, 0));
 		Material blue = new Material(new Color(0, 0, 255));
 
+                Material glass = new Material(new Color(255, 255, 255), 0, 0.1, 0.8);
 		Material greenRefl = new Material(new Color(0, 255, 0), 300, 0.3);
 		Material yellowRefl = new Material(new Color(255, 255, 0), 600, 0.6);
 		Material cyanRefl = new Material(new Color(0, 255, 255), 100, 0.1);
@@ -46,7 +47,7 @@ public class CornellBoxScene2 extends Scene {
 		Sphere sph1 = new Sphere(new Vector3d(0.75, -1, -4.75), 1.0f, cyanRefl);
 		Sphere sph2 = new Sphere(new Vector3d(-0.75, -1.25, -3.5), 0.75f,
 				greenRefl);
-		Sphere sph3 = new Sphere(new Vector3d(0.5, -1.6, -3.5), 0.4, yellowRefl);
+		Sphere sph3 = new Sphere(new Vector3d(0.5, -1.6, -3.5), 0.4, glass);
 		// Box box1 = new Box(new Vector3d(1.25,-2,-4), new
 		// Vector3d(1.75,-1.5,-3.5), blue);
 		Box box2 = new Box(new Vector3d(-2, -2, -6), new Vector3d(2, 2, 0.1),
@@ -54,6 +55,8 @@ public class CornellBoxScene2 extends Scene {
 		box2.setMaterial(Box.Side.LEFT, red);
 		box2.setMaterial(Box.Side.RIGHT, blue);
 
+                
+                
 		// add objects to scene
 		scenery.add(sph1);
 		scenery.add(sph2);

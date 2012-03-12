@@ -63,6 +63,7 @@ public class ThreadpoolCamera extends ThreadedCamera {
 		for (int i = 0; i < numThreads; i++) {
 			RenderPoolWorker w = new RenderPoolWorker(this);
 			Thread t = new Thread(w, "RenderPoolWorker " + i);
+                        t.setPriority((Thread.MIN_PRIORITY+Thread.NORM_PRIORITY)/2);
 			threads.add(t);
 			t.start();
 		}

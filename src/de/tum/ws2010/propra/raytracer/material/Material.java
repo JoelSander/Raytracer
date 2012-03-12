@@ -77,9 +77,7 @@ public class Material {
      *            Diffuse color of the material.
      */
     public Material(Color color) {
-        this.color = color;
-        this.shininess = 0;
-        this.reflectivity = 0;
+        this(color,0,0,0.0);
     }
 
     /**
@@ -92,9 +90,7 @@ public class Material {
      *            Blinn–Phong shading model.
      */
     public Material(Color c, double specularShininess) {
-        color = c;
-        shininess = specularShininess;
-        reflectivity = 0;
+        this(c,specularShininess,0,0.0);
     }
 
     /**
@@ -111,6 +107,26 @@ public class Material {
      */
     public Material(Color c, double specularShininess,
             double degreeOfReflectivity) {
+        this(c,specularShininess,degreeOfReflectivity,0.0);
+        
+    }
+    
+    /**
+     * Constructor for a specular, reflecting and transparent material.
+     * 
+     * @param c
+     *      Diffuse color of the material.
+     * @param specularShininess
+     *      Shininess factor for the specular highlight, according to the
+     *      Blinn–Phong shading model.
+     * @param degreeOfReflectivity
+     *      degree of reflectivity in the range of [0, 1], where 1 is a
+     *      perfect mirror.
+     * @param transparency 
+     *      the transparency, 0.0 being completely opaque and 1.0 perfectly clean diamonds.
+     */
+    public Material(Color c, double specularShininess,
+            double degreeOfReflectivity, double transparency) {
         color = c;
         shininess = specularShininess;
 
@@ -122,6 +138,8 @@ public class Material {
         } else {
             reflectivity = degreeOfReflectivity;
         }
+        
+        this.transparency=transparency;
     }
 
     /**
@@ -184,7 +202,6 @@ public class Material {
      */
     public Ray getReflectanceVector(Intersection i) {
         Vector3d invRayDir = i.ray.direction.times(-1);
-        // TODO Auto-generated method stub
         Vector3d reflectDir = i.normal.times(i.normal.scalarproduct(invRayDir)).times(2).minus(invRayDir);
         reflectDir = reflectDir.getNormalized();
 
@@ -218,24 +235,65 @@ public class Material {
      * mirror.
      */
     private final double reflectivity;
+    
+    private final double transparency;
 
     public Color traceRay(Ray r,Intersection intersect,Scenery s, int maxRecursions) {
         //TODO durchl‰ssigkeit
 
         Color c = s.illuminate(intersect);
         double reflFactor = intersect.material.getReflectivity(intersect);
-
-        if (reflFactor == 0 || maxRecursions == 0) {
+        
+        //old
+        /*if (reflFactor == 0 || maxRecursions == 0) {
             return c;
         } else {
             Ray rr = intersect.material.getReflectanceVector(intersect);
             Color rc = s.traceRay(rr, maxRecursions - 1);
-
+            if(rc==null)
+                return null;
             Color c2 = Material.scaleColor(c, 1 - reflFactor);
             Color rc2 = Material.scaleColor(rc, reflFactor);
 
             return Material.addColors(c2, rc2);
+        } //*/
+        
+        Color c1=null;
+        //do color
+        if(maxRecursions==0) {
+            return c;
         }
+        c1=c;
+        
+        //mix with transparency
+        //TODO bring in refraction here
+        if(transparency!=0) {
+            Ray rt = new Ray(intersect.position.plus(intersect.ray.direction.times(0.0001)),intersect.ray.direction);
+            Color ct=s.traceRay(rt, maxRecursions-1);
+            if(ct==null)
+                return null;
+            ct = scaleColor(ct,transparency);
+            
+            if(transparency<1) {
+                c1 = scaleColor(c1, 1-transparency);
+                c1 = addColors(c1, ct);
+            } else {
+                c1=ct;
+            }
+            
+        }
+        //TODO transparency does not work with reflection
+        if (reflFactor != 0) {
+            Ray rr = intersect.material.getReflectanceVector(intersect);
+            Color rc = s.traceRay(rr, maxRecursions - 1);
+            if(rc==null)
+                return null;
+            Color c2 = Material.scaleColor(c, 1 - reflFactor);
+            Color rc2 = Material.scaleColor(rc, reflFactor);
+
+            c1= Material.addColors(c2, rc2);
+        }
+        return c1;
     }
     
     

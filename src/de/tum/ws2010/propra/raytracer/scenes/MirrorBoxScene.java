@@ -24,7 +24,7 @@ public class MirrorBoxScene extends Scene {
 	 * Constructor generating the scenery and defining a camera position. 
 	 */
 	public MirrorBoxScene() {
-		scenery = new Scenery();
+		scenery = new Scenery(5,2,2);
 
 		// create Light sources
 		PointLight pl = new PointLight(0.4, new Vector3d(0, 1.5, -3));

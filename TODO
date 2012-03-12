@@ -33,6 +33,7 @@ performance:
 	
 light:
 	-photon mapping?
+	-wave-tracing? (rainbows)
 	
 eyecandy:
 	-AA
