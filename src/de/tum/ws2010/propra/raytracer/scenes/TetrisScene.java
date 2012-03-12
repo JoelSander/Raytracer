@@ -23,7 +23,7 @@ public class TetrisScene extends Scene {
 	 * Constructor generating the scenery and defining a camera position. 
 	 */
 	public TetrisScene() {
-		scenery = new Scenery();
+		scenery = new Scenery(5,2,4);
 
 		// create Light sources
 		scenery.add(new AmbientLight(0.05));

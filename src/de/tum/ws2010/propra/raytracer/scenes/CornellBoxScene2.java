@@ -1,31 +1,23 @@
-package raytracer.scenes;
+package de.tum.ws2010.propra.raytracer.scenes;
 
+import de.tum.ws2010.propra.raytracer.lights.*;
+import de.tum.ws2010.propra.raytracer.primitives.*;
+import de.tum.ws2010.propra.raytracer.render.*;
+import de.tum.ws2010.propra.raytracer.material.*;
 import java.awt.Color;
 
-import raytracer.lights.AmbientLight;
-import raytracer.lights.DirectionalLight;
-import raytracer.lights.PointLight;
-import raytracer.lights.SpotLight;
-
-import raytracer.material.Material;
-import raytracer.primitives.Box;
-import raytracer.primitives.Sphere;
-import raytracer.primitives.Vector3d;
-import raytracer.render.Camera;
-import raytracer.render.Scene;
-import raytracer.render.Scenery;
 
 /**
  * Cornell like box scene.
  *
  * @author (c) 2009-11 Roland Fraedrich
  */
-public class CornellBoxScene extends Scene {
+public class CornellBoxScene2 extends Scene {
 
 	/**
 	 * Constructor generating the scenery and defining a camera position.
 	 */
-	public CornellBoxScene() {
+	public CornellBoxScene2() {
 
 		scenery = new Scenery();
 
@@ -33,7 +25,7 @@ public class CornellBoxScene extends Scene {
 		AmbientLight al = new AmbientLight(0.1);
 		PointLight pl = new PointLight(0.7, new Vector3d(0, 1.5, -3));
 		SpotLight sl = new SpotLight(0.3, new Vector3d(-1.8, 1.8, 0),
-				new Vector3d(1, -2, -2.5), Math.PI / 9);
+				new Vector3d(-0.3, -0.7, -5.5), Math.PI / 10);
                 DirectionalLight dl = new DirectionalLight(0.3, new Vector3d(1, -2, -2.5));
                 
                 Material white = new Material(new Color(255, 255, 255));

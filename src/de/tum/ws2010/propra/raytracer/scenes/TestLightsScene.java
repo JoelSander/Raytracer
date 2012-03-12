@@ -22,7 +22,7 @@ import de.tum.ws2010.propra.raytracer.render.Scenery;
 public class TestLightsScene extends Scene {
 
 	public TestLightsScene() {
-		scenery = new Scenery();
+		scenery = new Scenery(5,2,4);
 		
 		// create Light sources
 		Light light;

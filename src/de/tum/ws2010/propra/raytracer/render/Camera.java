@@ -124,7 +124,7 @@ public class Camera {
 	 * @param pixY
 	 * @return Ray from the camera's origin through the given pixel.
 	 */
-	protected Ray createRay(int pixX, int pixY) {
+	public Ray createRay(int pixX, int pixY) {
 
 		// compute pixel offset along right and up direction
 		double offsetX = viewPlaneWidth
@@ -139,6 +139,10 @@ public class Camera {
 
 		return new Ray(pos, dir);
 	}
+        
+        public Ray createRay(double pixX, double pixY) {
+            //TODO
+        }
 
 	/**
 	 * Renders an image of a scene via raytracing.
@@ -147,9 +151,10 @@ public class Camera {
 	 *            Scene to be rendered.
 	 * @param img
 	 *            BufferedImage to store the resulting image.
+         * 
 	 */
 	public void renderImage(Scenery s, BufferedImage img) {
-
+                System.out.println("Warning: using singlethread-renderImage");
 		initImageSettings(img);
 
 		String progress = " Raytracing of image in Progress: ";

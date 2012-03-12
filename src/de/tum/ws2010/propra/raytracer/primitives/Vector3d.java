@@ -209,7 +209,15 @@ public class Vector3d {
 		double l = getLength();
 		set(x / l, y / l, z / l);
 	}
-
+        
+        /**
+         * computes the angle between this and another vector
+         */
+        public double angle(Vector3d other) {
+            
+            return Math.acos( scalarproduct(other)/(getLength()*other.getLength()) );
+        }
+        
 	/**
 	 * Returns the values of a vector like "(1,0,0)"
 	 */

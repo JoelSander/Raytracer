@@ -35,4 +35,9 @@ public class SynchronizedImage {
 	public synchronized void writePixel(int x, int y, Color c) {
 		img.setRGB(x, y, c.getRGB());
 	}
+        
+        public synchronized Color getPixel(int x, int y) {
+            //TODO synchronize with write
+            return new Color(img.getRGB(x, y));
+        }
 }

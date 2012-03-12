@@ -1,0 +1,44 @@
+
+IO:
+	-Export/import von Szenen
+	-Export von Bildern
+
+Geometrie:
+	-Terrain
+		-Simplex
+		-recursive polygons
+		-minecraftian
+	-additive/subtractive
+	-pointclouds
+		-mandelbox
+		-gauss-cloud
+	
+materials:
+	-wasser
+	-lichtdurchlässigkeit
+	
+texturen:
+	-pozedurale texturen
+	-bumpmaps
+	-mipmaps
+	-alphamaps
+	-cubic
+	
+performance:
+	-octrees
+	-backface culling?
+	-opencl?
+	-ray caching
+	-reflective/recursive fog
+	
+light:
+	-photon mapping?
+	
+eyecandy:
+	-AA
+		-adaptive edge
+		-FXAA?
+		-SMAA?
+	-texturfilterung
+	-HDR?
+	-filme

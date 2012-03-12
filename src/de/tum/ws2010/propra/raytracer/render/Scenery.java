@@ -11,7 +11,6 @@ import de.tum.ws2010.propra.raytracer.primitives.Intersectable;
 import de.tum.ws2010.propra.raytracer.primitives.Intersection;
 import de.tum.ws2010.propra.raytracer.primitives.Ray;
 
-
 /**
  * Scenery for the raytracer, which collects the objects and light sources
  * of the scene.
@@ -19,116 +18,131 @@ import de.tum.ws2010.propra.raytracer.primitives.Ray;
  * @author (c) 2009-11 Roland Fraedrich (fraedrich@tum.de)
  */
 public class Scenery {
+    public final int maxRecursions;
+    private final int maxAARecursions;
+    public final int aaLevel;
+    private double resolutionFact;
+    private Camera c;
+    
+    public Scenery(int maxRecursions, int maxAARecursions, int aaLevel) {
+        this.maxRecursions=maxRecursions;
+        this.maxAARecursions=maxAARecursions;
+        this.aaLevel=aaLevel;
+    }
+    
+    /**
+     * Adds the given light source to the scene.
+     * 
+     * @param l
+     *            Light source to be added.
+     */
+    public void add(Light l) {
+        lights.add(l);
+    }
 
-	/**
-	 * Adds the given light source to the scene.
-	 * 
-	 * @param l
-	 *            Light source to be added.
-	 */
-	public void add(Light l) {
-		lights.add(l);
-	}
+    /**
+     * Adds the given intersectable shadable object to the scene.
+     * 
+     * @param o
+     *            Intersectable object to be added.
+     */
+    public void add(Intersectable o) {
+        objects.add(o);
+    }
 
-	/**
-	 * Adds the given intersectable shadable object to the scene.
-	 * 
-	 * @param o
-	 *            Intersectable object to be added.
-	 */
-	public void add(Intersectable o) {
-		objects.add(o);
-	}
-
-	/**
-	 * Traces a ray through the scene to determine its color.
-	 * 
-	 * @param r
-	 *            Ray to be traced.
-	 * @param maxRecursions
-	 *            Number of maximal recursions like reflections and refractions
-	 * @return Shaded color determined for the traced ray.
-	 */
-	public Color traceRay(Ray r, int maxRecursions) {
+    /**
+     * Traces a ray through the scene to determine its color.
+     * 
+     * @param r
+     *            Ray to be traced.
+     * @param maxRecursions
+     *            Number of maximal recursions like reflections and refractions
+     * @return Shaded color determined for the traced ray.
+     */
+    public Color traceRay(Ray r, int recursionsLeft) {
 
 
-		Intersection intersect = objects.intersect(r);
+        Intersection intersect = objects.intersect(r);
 
-		if (intersect == null)
-			return background;
+        if (intersect == null) {
+            return background;
+        }
+        
+        if(maxRecursions-maxAARecursions<=recursionsLeft) {
+            //do AA
+            
+            //this is accurate for resolutions of 1000x1000-3000x3000, below it should do just a little overwork
+            if(intersect.distanceToEdge==Float.NaN || Math.log(intersect.distanceToEdge) < -0.0009*resolutionFact+3.2) {
+                System.out.println(intersect.distanceToEdge);
+                //TODO perform SSAA
+                return new Color(0, 0, 0, 0);
+            }
+        }
+        
+        return intersect.material.traceRay(r, intersect, this, recursionsLeft);
+    }
 
-		Color c = illuminate(intersect);
-		double reflFactor = intersect.material.getReflectivity(intersect);
+    /**
+     * Returns the nearest intersection for a ray in the scene.
+     * 
+     * @param r
+     *            Ray for which to find the nearest intersection.
+     * @return Nearest intersection with an object.
+     */
+    public Intersection getNearestIntersection(Ray r) {
+        return objects.intersect(r);
+    }
 
-		if (reflFactor == 0 || maxRecursions == 0)
-			return c;
-		else {
-			Ray rr = intersect.material.getReflectanceVector(intersect);
-			Color rc = traceRay(rr, maxRecursions - 1);
+    /**
+     * Computes the illumination at a given intersection with all light sources.
+     * 
+     * @param i
+     *            Intersection to be illuminated.
+     * @return Color value of the illumination.
+     */
+    public Color illuminate(Intersection i) {
+        // for all light sources in scene
+        // -> shade for all lights and sum color
+        Color c = new Color(0, 0, 0);
+        Iterator<Light> lightIt = lights.iterator();
 
-			Color c2 = Material.scaleColor(c, 1 - reflFactor);
-			Color rc2 = Material.scaleColor(rc, reflFactor);
+        while (lightIt.hasNext()) {
+            Light l = lightIt.next();
 
-			return Material.addColors(c2, rc2);
-		}
-	}		
+            Color col1 = l.illuminate(i, this);
+            c = Material.addColors(c, col1);
+        }
+        return c;
+    }
 
-	/**
-	 * Returns the nearest intersection for a ray in the scene.
-	 * 
-	 * @param r
-	 *            Ray for which to find the nearest intersection.
-	 * @return Nearest intersection with an object.
-	 */
-	public Intersection getNearestIntersection(Ray r) {
-		return objects.intersect(r);
-	}
-
-	/**
-	 * Computes the illumination at a given intersection with all light sources.
-	 * 
-	 * @param i
-	 *            Intersection to be illuminated.
-	 * @return Color value of the illumination.
-	 */
-	protected Color illuminate(Intersection i) {
-		// for all light sources in scene
-		// -> shade for all lights and sum color
-		Color c = new Color(0, 0, 0);
-		Iterator<Light> lightIt = lights.iterator();
-
-		while (lightIt.hasNext()) {
-			Light l = lightIt.next();
-
-			Color col1 = l.illuminate(i, this);
-			c = Material.addColors(c, col1);
-		}
-		return c;
-	}
-
-	/**
-	 * Sets the background color for the scene
-	 * 
-	 * @param c New background color of the scene
-	 */
-	public void setBackgroundColor(Color c) {
-		background = c;
-	}
-	
-	/**
-	 * Objects in the scene.
-	 */
-	protected BoxedGroup objects = new BoxedGroup();
-	
-	/**
-	 * List of all light sources of the scene.
-	 */
-	protected ArrayList<Light> lights = new ArrayList<Light>();
-
-	/**
-	 * Background color which is set for a ray having no intersection with the
-	 * scene. Default is black.
-	 */
-	protected Color background = new Color(0, 0, 0);
-
+    /**
+     * Sets the background color for the scene
+     * 
+     * @param c New background color of the scene
+     */
+    public void setBackgroundColor(Color c) {
+        background = c;
+    }
+    
+    public void setCamera(Camera c) {
+        this.c=c;
+        this.resolutionFact=Math.sqrt(c.resX*c.resY);
+        System.out.println("resFact:"+resolutionFact);
+    }
+    
+    
+    /**
+     * Objects in the scene.
+     */
+    protected BoxedGroup objects = new BoxedGroup();
+    
+    /**
+     * List of all light sources of the scene.
+     */
+    protected ArrayList<Light> lights = new ArrayList<Light>();
+    /**
+     * Background color which is set for a ray having no intersection with the
+     * scene. Default is black.
+     */
+    protected Color background = new Color(0, 0, 0);
 }

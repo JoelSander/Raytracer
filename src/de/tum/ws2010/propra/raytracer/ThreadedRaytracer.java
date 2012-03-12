@@ -15,7 +15,9 @@ import de.tum.ws2010.propra.raytracer.render.Camera;
 import de.tum.ws2010.propra.raytracer.render.Scene;
 import de.tum.ws2010.propra.raytracer.render.Scenery;
 import de.tum.ws2010.propra.raytracer.scenes.ChristmasScene;
-
+import de.tum.ws2010.propra.raytracer.scenes.CornellBoxScene;
+import de.tum.ws2010.propra.raytracer.scenes.CornellBoxScene2;
+import de.tum.ws2010.propra.raytracer.scenes.TestLightsScene;
 
 /**
  * Swing GUI for raytracing a scene and showing the resulting image.
@@ -25,113 +27,116 @@ import de.tum.ws2010.propra.raytracer.scenes.ChristmasScene;
  */
 public class ThreadedRaytracer extends JFrame {
 
-	//! rendered image 
-	protected BufferedImage buffImg;
+    //! rendered image 
+    protected BufferedImage buffImg;
+    static int width = 1000;
+    static int height = 1000;
 
-	/**
-	 * Sets up and renders the scene.
-	 */
-	public void renderImage() {
-		// Declaration of Camera. Position is set later on by the scene.
-		//Camera cam = new Camera(Math.PI / 3.0f);
-		//Camera cam = new LinethreadCamera(Math.PI / 3.0f);
-		//Camera cam = new MultithreadCamera(Math.PI / 3.0f, 4);
-		Camera cam = new ThreadpoolCamera(Math.PI / 3.0f, 3);
+    /**
+     * Sets up and renders the scene.
+     */
+    public void renderImage() {
+        // Declaration of Camera. Position is set later on by the scene.
+        //Camera cam = new Camera(Math.PI / 3.0f);
+        //Camera cam = new LinethreadCamera(Math.PI / 3.0f);
+        //Camera cam = new MultithreadCamera(Math.PI / 3.0f, 4);
+        Camera cam = new ThreadpoolCamera(Math.PI / 3.0f, 1);
 
-		// Get or create a scene.
-		// Remove comment of the scene you want to render.
-		Scene s = null;
-		//s = new MirrorBoxScene();
-		//s = new CornellBoxScene();
-		//s = new CheckerboardScene();
-		//s = new TetrisScene();
-		s = new ChristmasScene();
+        // Get or create a scene.
+        // Remove comment of the scene you want to render.
+        Scene s = null;
+        s = new TestLightsScene();
+        // s = new CheckerboardScene();
+        //s = new CornellBoxScene2();
+        // s = new MirrorBoxScene();
+        // s = new TetrisScene();
+        // s = new StairwayScene();
+        // s = new ChristmasScene();
 
-		// Get scenery of the selected scene.
-		Scenery scenery = s.getScenery();
-		// Change camera according to the selected scene.
-		s.setCamera(cam);
+        // Get scenery of the selected scene.
+        Scenery scenery = s.getScenery();
+        // Change camera according to the selected scene.
+        s.setCamera(cam);
 
-		
-		// memorize time when starting rendering
-		long startTime = System.nanoTime();
+        // memorize time when starting rendering
+        long startTime = System.nanoTime();
 
-		// Render the scene in one of the render modes
-		//cam.renderDepth(scenery, buffImg);
-		//cam.renderColorOf1stHit(scenery, buffImg);
-		//cam.renderNormals(scenery, buffImg);
-		cam.renderImage(scenery, buffImg);
-		
-		// Get time when rendering is finished
-		long endTime = System.nanoTime();
+        // Render the scene in one of the render modes
+        //cam.renderDepth(scenery, buffImg);
+        //cam.renderColorOf1stHit(scenery, buffImg);
+        //cam.renderNormals(scenery, buffImg);
+        cam.renderImage(scenery, buffImg);
 
-		// Print out needed time
-		System.out.println("Rendering took "
-				+ (endTime - startTime) / (1000.0 * 1000.0 * 1000.0) 
-				+ " s");
-	}
-	
-	/**
-	 * Constructor with the image to be shown.
-	 * 
-	 * @param img Image that is rendered and presented in the window.
-	 */
-	public ThreadedRaytracer(BufferedImage img) {
-		super("Raytracer");
-		buffImg = img;
-	}
-	
-	/**
-	 * main-method.
-	 * 
-	 * @param args All arguments are ignored.
-	 */
-	public static void main(String args[]) {
-		try {
-			UIManager
-					.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-		} catch (Exception evt) {
-		}
+        // Get time when rendering is finished
+        long endTime = System.nanoTime();
 
-		// define size of image to be rendered
-		int width  = 800;
-		int height = 600;
-		
-		// create image to be rendered
-		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        // Print out needed time
+        System.out.println("Rendering took "
+                + (endTime - startTime) / (1000.0 * 1000.0 * 1000.0)
+                + " s");
+    }
 
-		// create and set up frame
-		ThreadedRaytracer raytraceFrame = new ThreadedRaytracer(img);
-		raytraceFrame.setResizable(false);
-		raytraceFrame.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-		});
-		
-		// fix frame size to size of image
-		raytraceFrame.setSize(width, height);
-		raytraceFrame.setVisible(true);
-		
-		// render image
-		Thread renderThread  = new Thread( new RenderWorker(raytraceFrame), "RenderWorker" );
-		Thread repaintThread = new Thread( new FrameRepainter(raytraceFrame, renderThread), "RepaintWorker" );
-		
-		// start render threads
-		renderThread.start();
-		repaintThread.start();
-	}
+    /**
+     * Constructor with the image to be shown.
+     * 
+     * @param img Image that is rendered and presented in the window.
+     */
+    public ThreadedRaytracer(BufferedImage img) {
+        super("Raytracer");
+        buffImg = img;
+    }
 
-	/**
-	 * Paint-method for the frame, that repaints the image to be shown.
-	 */
-	public void paint(Graphics g) {
-		g.drawImage(buffImg, 0, 0, this);
-	}
+    /**
+     * main-method.
+     * 
+     * @param args All arguments are ignored.
+     */
+    public static void main(String args[]) {
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (Exception evt) {
+        }
 
-	/**
-	 * ID, that is necessary for a JFrame.  
-	 */
-	private static final long serialVersionUID = -4395108284480194303L;
 
+
+        // create image to be rendered
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        // create and set up frame
+        ThreadedRaytracer raytraceFrame = new ThreadedRaytracer(img);
+        raytraceFrame.setResizable(false);
+        raytraceFrame.addWindowListener(new WindowAdapter() {
+            @Override public void windowClosing(WindowEvent e) {
+                //TODO ask for saving
+                System.exit(0);
+            }
+        });
+        
+        Thread renderThread = new Thread(new RenderWorker(raytraceFrame), "RenderWorker");
+        FrameRepainter frp=new FrameRepainter(renderThread,img);
+        Thread repaintThread = new Thread(frp, "RepaintWorker");
+        // fix frame size to size of image
+        //raytraceFrame.setSize(width, height);
+        raytraceFrame.add(frp);
+        raytraceFrame.pack();
+        raytraceFrame.setVisible(true);
+
+        // render image
+        
+
+        // start render threads
+        renderThread.start();
+        repaintThread.start();
+        try {
+            renderThread.join();
+            Thread.sleep(300);
+        } catch (InterruptedException ex) {}
+        raytraceFrame.repaint();
+    }
+
+    
+    /**
+     * ID, that is necessary for a JFrame.  
+     */
+    private static final long serialVersionUID = -4395108284480194303L;
 }
